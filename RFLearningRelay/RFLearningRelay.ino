@@ -18,7 +18,7 @@ const char broker[] = "m2.wqtt.ru";
 int port = 16017;
 String topic = "stat/ESP32-test";
 const char *mqttUser = "user"; 
-const char *mqttPass = "password";
+const char *mqttPass = "pass";
 unsigned long lastMqttReconnectAttempt = 0;
 unsigned long lastWifiReconnectAttempt = 0;
 
@@ -47,6 +47,8 @@ WiFiManager wm;
 #define RF_PIN 27      //2
 #define BUTTON_PIN 17  //4
 const uint8_t channelPins[CHANNEL_COUNT] = { 21, 22, 23, 25 };
+const uint8_t buttonPins[CHANNEL_COUNT] = {26, 27, 32, 33};
+
 #elif defined(ESP8266)
 #define MAX_EEPROM_SIZE 2048
 #define CHANNEL_COUNT 2  //количество каналов
@@ -59,8 +61,9 @@ const uint8_t channelPins[CHANNEL_COUNT] = { 21, 22, 23, 25 };
 #endif
 #define RF_PIN 4    
 #define BUTTON_PIN 5
-const uint8_t channelPins[CHANNEL_COUNT] = {12, 13};
-const uint8_t buttonPins[CHANNEL_COUNT] = {14, 16};
+const uint8_t channelPins[CHANNEL_COUNT] = {14, 16};
+const uint8_t buttonPins[CHANNEL_COUNT] = {12, 13};
+
 #else
 #define MAX_EEPROM_SIZE 1024
 #define CHANNEL_COUNT 4  //количество каналов
@@ -95,7 +98,7 @@ const uint8_t channelPins[CHANNEL_COUNT] = { 4, 5, 6, 7 };
 #define MODE_FALLING_ONLY 2   // реагируем только на спад (нажатие)
 #define MODE_LEVEL_TOGGLE 3   // LOW = ВКЛ, HIGH = ВЫКЛ
 // Настройка: реагировать только на спад или на оба фронта
-uint8_t triggerMode = MODE_LEVEL_TOGGLE;
+uint8_t triggerMode = MODE_BOTH_EDGES;
 String serialCommand = "";
 uint8_t channelModes[CHANNEL_COUNT];
 unsigned long lastTrigger[CHANNEL_COUNT] = { 0 };
