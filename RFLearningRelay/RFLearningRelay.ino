@@ -16,7 +16,7 @@
 
 const char broker[] = "m2.wqtt.ru";
 int port = 16017;
-String topic = "stat/ESP32-test";
+String topic = "stat/switch-4C399F";
 const char *mqttUser = "user"; 
 const char *mqttPass = "pass";
 unsigned long lastMqttReconnectAttempt = 0;
@@ -156,8 +156,8 @@ void onMqttMessage(int messageSize) {
   Serial.println(payload);
 
   // Проверяем, что топик соответствует шаблону cmnd/ESP-32test/CHANNELX
-  if (topic.startsWith("cmnd/ESP-32test/CHANNEL")) {
-    int channel = topic.substring(strlen("cmnd/ESP-32test/CHANNEL")).toInt();
+  if (topic.startsWith("cmnd/switch-4C399F/CHANNEL")) {
+    int channel = topic.substring(strlen("cmnd/switch-4C399F/CHANNEL")).toInt();
 
     uint8_t mode;
     if (payload == "ON") mode = 3;
@@ -395,7 +395,7 @@ void logState(uint8_t ch, const char *action) {
 #if USE_WIFI
 
     if (mqttClient.connected()) {
-      String stopic = "stat/ESP-32test/CHANNEL";
+      String stopic = "stat/switch-4C399F/CHANNEL";
       stopic += ch;
       mqttClient.beginMessage(stopic);
       mqttClient.print(channelState[ch] ? "ON" : "OFF");
@@ -956,7 +956,7 @@ void setup() {
     } else {
       Serial.println("You're connected to the MQTT broker!");
       mqttClient.onMessage(onMqttMessage);  // устанавливаем обработчик
-      mqttClient.subscribe("cmnd/ESP-32test/#");
+      mqttClient.subscribe("cmnd/switch-4C399F/#");
     }
 
     Serial.println("Ready");
@@ -987,7 +987,7 @@ void loop() {
           Serial.println(mqttClient.connectError());
         } else {
           mqttClient.onMessage(onMqttMessage);  // устанавливаем обработчик
-          mqttClient.subscribe("cmnd/ESP-32test/#");
+          mqttClient.subscribe("cmnd/switch-4C399F/#");
         }
       }
     } else {
