@@ -61,6 +61,7 @@ const uint8_t buttonPins[CHANNEL_COUNT] = {26, 27, 32, 33};
 #endif
 #define RF_PIN 4    
 #define BUTTON_PIN 5
+#define ZERRO_CROSS_PIN 3
 const uint8_t channelPins[CHANNEL_COUNT] = {14, 16};
 const uint8_t buttonPins[CHANNEL_COUNT] = {12, 13};
 
@@ -97,6 +98,7 @@ const uint8_t channelPins[CHANNEL_COUNT] = { 4, 5, 6, 7 };
 #define MODE_BOTH_EDGES   1   // реагируем на все фронты
 #define MODE_FALLING_ONLY 2   // реагируем только на спад (нажатие)
 #define MODE_LEVEL_TOGGLE 3   // LOW = ВКЛ, HIGH = ВЫКЛ
+#define ZERRO_CROSS_TIMEOUT_COUNT 600000UL
 // Настройка: реагировать только на спад или на оба фронта
 uint8_t triggerMode = MODE_BOTH_EDGES;
 String serialCommand = "";
@@ -426,8 +428,21 @@ void logState(uint8_t ch, const char *action) {
 void processChannel(uint8_t channel, uint8_t mode) {
   if (channel >= CHANNEL_COUNT) return;
   unsigned long now = millis();
+  unsigned long zcounter = 0;
   channelMode[channel] = mode;
+  
+  // 1) ожидание спада 0 → 1
+  while (digitalRead(ZERRO_CROSS_PIN) == LOW) {
+    zcounter++;
+    if (zcounter >= ZERRO_CROSS_TIMEOUT_COUNT) break;  // таймаут
+  }
 
+  // 2) ожидание спада 1 → 0
+  while (digitalRead(ZERRO_CROSS_PIN) == HIGH) {
+    zcounter++;
+    if (zcounter >= ZERRO_CROSS_TIMEOUT_COUNT) break;  // таймаут
+  }
+  
   switch (mode) {
     case 2:  // поддержание включения
       channelState[channel] = true;
@@ -964,6 +979,8 @@ void setup() {
     Serial.println(WiFi.localIP());
   }
 #endif
+Serial.end();
+pinMode(ZERRO_CROSS_PIN, INPUT);
 }
 
 void loop() {
